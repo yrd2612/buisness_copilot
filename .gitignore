@@ -1,0 +1,14 @@
+*.txt
+*__pycache__
+venv/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.webp
+*.ico
+.env
+*.ipynb
