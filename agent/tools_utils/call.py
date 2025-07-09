@@ -1,4 +1,4 @@
-def get_user_details(parameter: str) -> str:
+def get_user_details(parameter: dict) -> str:
     """
     Retrieve user details from neo4j database.
     

@@ -2,12 +2,20 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_core.messages import AIMessage
 from langgraph.graph import END, StateGraph
+import os
 from pydantic import BaseModel, Field
 from typing import TypedDict
 from termcolor import colored
 from agent.constants import model_name
 from agent.tools import invalid,access_database,call_user
 from agent.prompt import system_prompt,categorize_prompt
+
+class AgentState(TypedDict):
+    research_question: str
+    tool_response: str
+    agent_response: AIMessage
+    agent_call_count: int = 0
+    tool_call_count: int = 0
 
 model = ChatGoogleGenerativeAI(
     model=model_name,
@@ -36,20 +44,12 @@ system_message = SystemMessagePromptTemplate.from_template(
 agent_request_generator_prompt = ChatPromptTemplate.from_messages([system_message, user_message])
 
 agent_request_generator = agent_request_generator_prompt | model_with_tools
-# result = agent_request_generator.invoke({"initial_request": "Call Yash and ask updates"})
-# print(result)
-
-class AgentState(TypedDict):
-    research_question: str
-    tool_response: str
-    agent_response: AIMessage
-    agent_call_count: int = 0
-    tool_call_count: int = 0
 
 def agent(state: AgentState):
     print(colored("STATE at agent start:", "magenta"), colored(state, "cyan"))
     input("Paused ... Hit Enter to Execute Agent Logic...")
     last_ai_message = agent_request_generator.invoke({"initial_request": state["research_question"]})
+    print("Agent invoked")
     state["agent_call_count"] += 1
     #append the response to the agent_response list in the state
     if last_ai_message is not None:
@@ -152,10 +152,10 @@ def start_agent(instruction: str):
     result = app.invoke(state)
     print(colored("Final Result:", "yellow"), colored(result, "green"))
 
-#helper method to visualize graph
-    def save_graph_to_file(runnable_graph, output_file_path):
-        png_bytes = runnable_graph.get_graph().draw_mermaid_png()
-        with open(output_file_path, 'wb') as file:
-            file.write(png_bytes)
+    #helper method to visualize graph
+    # def save_graph_to_file(runnable_graph, output_file_path):
+    #     png_bytes = runnable_graph.get_graph().draw_mermaid_png()
+    #     with open(output_file_path, 'wb') as file:
+    #         file.write(png_bytes)
 
-    save_graph_to_file(app, "output-05.png")
+    # save_graph_to_file(app, "output-05.png")
