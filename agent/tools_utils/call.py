@@ -1,13 +1,13 @@
 from agent.neo4j_setup import connect_neo4j
 from twilio.rest import Client
-
+from agent.constants import twilio_access_token, twilio_account_sid, twilio_number
 def send_message(instruction: str, phone_number: str) -> None:
-    account_sid = 'AC460cf51f6510f519498fdcf0a8f31fe1'
-    auth_token = '[AuthToken]'
+    account_sid = twilio_account_sid
+    auth_token = twilio_access_token
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
-    from_='whatsapp:+14155238886',
+    from_=f'whatsapp:{twilio_number}',
     body=instruction,
     to=f'whatsapp:+91{phone_number}'
     )
