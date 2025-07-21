@@ -12,3 +12,4 @@ venv/
 *.ico
 .env
 *.ipynb
+tutorials/
